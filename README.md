@@ -45,8 +45,25 @@ pipelines:
         batchsize: 5000
 ```
 
-- `full` replication: deletes the measurement before writing (all time range).
-- `incremental` replication: appends new points to the existing measurement.
+---
+
+## Write Strategy
+
+Control how data is written to InfluxDB:
+
+```yaml
+      - name: public.metrics
+        target_name: cpu_usage
+        write_strategy: upsert       # append | replace | upsert
+```
+
+| Strategy | InfluxDB Behavior |
+|---|---|
+| `append` | Write data points (default for incremental) |
+| `replace` | Delete the measurement (all time range), then write (default for full) |
+| `upsert` | Same as `append` — InfluxDB naturally deduplicates by timestamp + tag set. Writing a point with the same timestamp and tags overwrites the existing point. |
+
+> **Note:** InfluxDB uses timestamp + tag set as a natural primary key. `write_key` is not required — deduplication happens automatically.
 
 ---
 
@@ -89,8 +106,9 @@ Auto-added columns (`etl_time`, `mkpipe_id`) are excluded from fields.
 |---|---|---|---|
 | `name` | string | required | Source table name |
 | `target_name` | string | required | InfluxDB measurement name to write into |
-| `replication_method` | `full` / `incremental` | `full` | `full` deletes measurement first; `incremental` appends |
+| `replication_method` | `full` / `incremental` | `full` | Replication strategy |
 | `batchsize` | int | `10000` | Points per write API call |
+| `write_strategy` | string | — | `append`, `replace`, `upsert` |
 | `dedup_columns` | list | — | Columns used for `mkpipe_id` hash deduplication |
 | `tags` | list | `[]` | Tags for selective pipeline execution |
 | `pass_on_error` | bool | `false` | Skip table on error instead of failing |
