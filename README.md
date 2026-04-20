@@ -77,7 +77,7 @@ Rows from the DataFrame are written as InfluxDB line protocol points:
 | `tag_columns` values | Tags (indexed) | `extra.tag_columns: [col1, col2]` |
 | All other columns | Fields (values) | Default; or restrict via `extra.field_columns` |
 
-Auto-added columns (`etl_time`, `mkpipe_id`) are excluded from fields.
+Auto-added columns (`_ingested_at`, `mkpipe_id`) are excluded from fields. The ingestion timestamp column name is configurable via `settings.ingested_at_column`.
 
 ---
 
