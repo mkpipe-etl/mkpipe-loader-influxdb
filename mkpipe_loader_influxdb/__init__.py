@@ -28,7 +28,12 @@ class InfluxDBLoader(BaseLoader, variant='influxdb'):
             logger.info({'table': target_name, 'status': 'skipped', 'reason': 'no data'})
             return
 
-        df = add_etl_columns(df, datetime.now(), dedup_columns=table.dedup_columns, ingested_at_column=self.ingested_at_column)
+        df = add_etl_columns(
+            df, datetime.now(),
+            dedup_columns=table.dedup_columns,
+            ingested_at_column=self.ingested_at_column,
+            ingestion_id_column=self.ingestion_id_column,
+        )
 
         strategy = resolve_write_strategy(table, data)
 
@@ -83,7 +88,7 @@ class InfluxDBLoader(BaseLoader, variant='influxdb'):
                     if field_columns:
                         fields = {k: row[k] for k in field_columns if k in row and row[k] is not None}
                     else:
-                        skip = set(tag_columns) | {time_column, '_measurement', self.ingested_at_column, 'mkpipe_id'}
+                        skip = set(tag_columns) | {time_column, '_measurement', self.ingested_at_column, self.ingestion_id_column}
                         fields = {k: v for k, v in row.items() if k not in skip and v is not None}
 
                     if not fields:
