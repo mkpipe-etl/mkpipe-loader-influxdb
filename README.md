@@ -60,7 +60,7 @@ Control how data is written to InfluxDB:
 | Strategy | InfluxDB Behavior |
 |---|---|
 | `append` | Write data points (default for incremental) |
-| `replace` | Delete the measurement (all time range), then write (default for full) |
+| `replace` | Delete the measurement (all time range), then write (default for full). Use `if_exists: append` to skip deletion |
 | `upsert` | Same as `append` — InfluxDB naturally deduplicates by timestamp + tag set. Writing a point with the same timestamp and tags overwrites the existing point. |
 
 > **Note:** InfluxDB uses timestamp + tag set as a natural primary key. `write_key` is not required — deduplication happens automatically.
@@ -109,6 +109,7 @@ Auto-added columns (`_ingested_at`, `mkpipe_id`) are excluded from fields. Both 
 | `replication_method` | `full` / `incremental` | `full` | Replication strategy |
 | `batchsize` | int | `10000` | Points per write API call |
 | `write_strategy` | string | — | `append`, `replace`, `upsert` |
+| `if_exists` | string | — | `replace` (delete+write) or `append` (skip deletion). Inherits from settings |
 | `dedup_columns` | list | — | Columns used for `mkpipe_id` hash deduplication |
 | `tags` | list | `[]` | Tags for selective pipeline execution |
 | `pass_on_error` | bool | `false` | Skip table on error instead of failing |
