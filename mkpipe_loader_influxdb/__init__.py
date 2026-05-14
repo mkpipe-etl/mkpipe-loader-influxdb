@@ -53,16 +53,15 @@ class InfluxDBLoader(BaseLoader, variant='influxdb'):
 
             match strategy:
                 case WriteStrategy.REPLACE:
-                    if self.if_exists != 'append':
-                        delete_api = client.delete_api()
-                        delete_api.delete(
-                            start='1970-01-01T00:00:00Z',
-                            stop='2099-12-31T23:59:59Z',
-                            predicate=f'_measurement="{target_name}"',
-                            bucket=self.bucket,
-                            org=self.org,
-                        )
-                        logger.info({'table': target_name, 'status': 'measurement_deleted'})
+                    delete_api = client.delete_api()
+                    delete_api.delete(
+                        start='1970-01-01T00:00:00Z',
+                        stop='2099-12-31T23:59:59Z',
+                        predicate=f'_measurement="{target_name}"',
+                        bucket=self.bucket,
+                        org=self.org,
+                    )
+                    logger.info({'table': target_name, 'status': 'measurement_deleted'})
                 case WriteStrategy.APPEND | WriteStrategy.UPSERT:
                     pass
                 case _:
